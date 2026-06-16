@@ -1,0 +1,9 @@
+---
+title: "Stat 558: Project 1"
+author: "Bryan Sandor"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+# Preamble
