@@ -7,3 +7,63 @@ editor_options:
 ---
 
 # Preamble
+The goal is to write functions manipulating and processing data sets originating from a census application programming interface (API). _Generic_ functions will be created to automatically summarize and plot some returned data. We load the necessary libraries in this first code section.
+
+```{r necessary_packages}
+library(tidyverse)
+library(dplyr)
+library(httr)
+library(jsonlite)
+library(janitor)
+```
+
+
+## Data
+We will be using the Public Use Microdata Sample (PUMS) Census API. Information about variables from selected years may be found [here](https://api.census.gov/data/2024/acs/acs1/pums/variables.html) by changing the year section (here, $2024$).
+
+# Data Processing
+1. Here is an example call for Tennessee (code `STATE = 47`) from $2024$ citizens having a doctorate (code `SCHL = 24`), that returns the categorical variables `SEX` and marital status (`MAR`) and the numeric variable weight (`PWGTP`).
+
+```{r data_processing_bullet_1}
+census <- GET("https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,MAR&for=state:47&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
+```
+
+2. Then we use _helper_ functions to "clean" up the data.
+
+```{r data_processing_bullet_2}
+census_tibble <- census$content |>
+  rawToChar() |>
+  fromJSON() |>
+  as_tibble(.name_repair = "minimal") |>
+  row_to_names(row_number = 1) # "promotes" first row to column headers
+
+census_tibble
+```
+
+3. Now we write a function 
+
+```{r data_processing_bullet_3}
+census_query <- function(year = 2022,
+                         numvar = c("AGEP", "PWGTP"),
+                         catvar = "SEX",
+                         geolevel = "STATE",
+                         subset = NULL){
+  
+  if (year < 2010 || year == 2020 || year > 2024){
+    print("Please enter a year between 2010 and 2024, inclusive; 2020 is also not available.")
+  }
+  
+  if (length(numvar) < 2 || 
+      any(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP",
+                             "JWMNP", "PWGTP")))){
+    print("Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'.")
+  }
+  
+  if (any(!(catvar %in% c("FER", "HHL", "SCH", "SCHL", "SEX")))){
+    print("Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default).")
+  }
+  
+  c(numvar, catvar)
+}
+```
+
