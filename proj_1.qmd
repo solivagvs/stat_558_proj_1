@@ -25,13 +25,13 @@ We will be using the Public Use Microdata Sample (PUMS) Census API. Information 
 1. Here is an example call for Tennessee (code `STATE = 47`) from $2024$ citizens having a doctorate (code `SCHL = 24`), that returns the categorical variables `SEX` and marital status (`MAR`) and the numeric variable weight (`PWGTP`).
 
 ```{r data_processing_bullet_1}
-census <- GET("https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,MAR&for=state:47&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
+census_tn <- GET("https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,MAR&for=state:47&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
 ```
 
 2. Then we use _helper_ functions to "clean" up the data.
 
 ```{r data_processing_bullet_2}
-census_tibble <- census$content |>
+census_tibble <- census_tn$content |>
   rawToChar() |>
   fromJSON() |>
   as_tibble(.name_repair = "minimal") |>
@@ -48,22 +48,45 @@ census_query <- function(year = 2022,
                          catvar = "SEX",
                          geolevel = "STATE",
                          subset = NULL){
+
+# geographic level dictionaries
+states <- list("AK" = "02", "AL" = "01", "AR" = "05", "AZ" = "04", "CA" = "06", "CO" = "08", "CT" = "09", "DC" = "11", "DE" = "10", "FL" = "12", "GA" = "13", "HI" = "15", "IA" = "19", "ID" = "16", "IL" = "17", "IN" = "18", "KS" = "20", "KY" = "21", "LA" = "22", "MA" = "25", "MD" = "24", "ME" = "23", "MI" = "26", "MN" = "27", "MO" = "29", "MS" = "28", "MT" = "30", "NC" = "37", "ND" = "38", "NE" = "31", "NH" = "33", "NJ" = "34", "NM" = "35", "NV" = "32", "NY" = "36", "OH" = "39", "OK" = "40", "OR" = "41", "PA" = "42", "RI" = "44", "SC" = "45", "SD" = "46", "TN" = "47", "TX" = "48", "UT" = "49", "VA" = "51", "VT" = "50", "WA" = "53", "WI" = "55", "WV" = "54", "WY" = "56")
+
+regions <- list("NORTHEAST" = '1', "MIDWEST" = '2', "SOUTH" = '3', "WEST" = '4')
+
+divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENTRAL" = '3', "WEST NORTH CENTRAL" = '4', "SOUTH ATLANTIC" = '5', "EAST SOUTH CENTRAL" = '6', "WEST SOUTH CENTRAL" = '7', "MOUNTAIN" = '8', "PACIFIC" = '9')
   
+# year range validation
   if (year < 2010 || year == 2020 || year > 2024){
     print("Please enter a year between 2010 and 2024, inclusive; 2020 is also not available.")
-  }
-  
+  } else {
+    census_string <- paste0("https://api.census.gov/data/", year, 
+    "/acs/acs1/pums?get=")
+  } # initializes census query with appropriate year
+
+# numeric variables validation  
   if (length(numvar) < 2 || 
       any(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP",
                              "JWMNP", "PWGTP")))){
     print("Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'.")
-  }
+  } else if ("PWGTP" %notin% numvar) {
+    census_string <- paste0(census_string, "PWGTP,", str_c(numvar, collapse = ","))
+  } else {
+    census_string <- paste0(census_string, str_c(numvar, collapse = ","))
+  } # appends numeric variables to end of census query
   
+# categorical variables validation
   if (any(!(catvar %in% c("FER", "HHL", "SCH", "SCHL", "SEX")))){
     print("Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default).")
+  } else {
+    census_string <- paste0(census_string, str_c(catvar, collapse = ","), ",")
+  } # appends categorical variable(s) to end of census query
+
+# geographical level validation  
+  if (geolevel == "STATE" && !is.null(subset)){
   }
   
-  c(numvar, catvar)
+  census
 }
 ```
 

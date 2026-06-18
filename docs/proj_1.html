@@ -223,13 +223,13 @@ The following objects are masked from 'package:stats':
 <li>Here is an example call for Tennessee (code <code>STATE = 47</code>) from <span class="math inline">\(2024\)</span> citizens having a doctorate (code <code>SCHL = 24</code>), that returns the categorical variables <code>SEX</code> and marital status (<code>MAR</code>) and the numeric variable weight (<code>PWGTP</code>).</li>
 </ol>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>census <span class="ot">&lt;-</span> <span class="fu">GET</span>(<span class="st">"https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,MAR&amp;for=state:47&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>census_tn <span class="ot">&lt;-</span> <span class="fu">GET</span>(<span class="st">"https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,MAR&amp;for=state:47&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="2" type="1">
 <li>Then we use <em>helper</em> functions to “clean” up the data.</li>
 </ol>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>census_tibble <span class="ot">&lt;-</span> census<span class="sc">$</span>content <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>census_tibble <span class="ot">&lt;-</span> census_tn<span class="sc">$</span>content <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rawToChar</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fromJSON</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>(<span class="at">.name_repair =</span> <span class="st">"minimal"</span>) <span class="sc">|&gt;</span></span>
@@ -240,15 +240,15 @@ The following objects are masked from 'package:stats':
 <pre><code># A tibble: 917 × 5
    SEX   PWGTP MAR   SCHL  state
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
- 1 1     60    1     24    47   
- 2 1     95    3     24    47   
- 3 1     56    1     24    47   
- 4 2     123   1     24    47   
- 5 1     51    1     24    47   
- 6 2     141   1     24    47   
- 7 1     56    1     24    47   
- 8 2     96    1     24    47   
- 9 1     47    1     24    47   
+ 1 2     117   1     24    47   
+ 2 2     60    3     24    47   
+ 3 2     95    1     24    47   
+ 4 2     45    1     24    47   
+ 5 1     112   1     24    47   
+ 6 2     119   1     24    47   
+ 7 1     158   1     24    47   
+ 8 2     70    1     24    47   
+ 9 1     58    1     24    47   
 10 1     54    1     24    47   
 # ℹ 907 more rows</code></pre>
 </div>
@@ -262,23 +262,46 @@ The following objects are masked from 'package:stats':
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">catvar =</span> <span class="st">"SEX"</span>,</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">geolevel =</span> <span class="st">"STATE"</span>,</span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">subset =</span> <span class="cn">NULL</span>){</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (year <span class="sc">&lt;</span> <span class="dv">2010</span> <span class="sc">||</span> year <span class="sc">==</span> <span class="dv">2020</span> <span class="sc">||</span> year <span class="sc">&gt;</span> <span class="dv">2024</span>){</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a year between 2010 and 2024, inclusive; 2020 is also not available."</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(numvar) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">||</span> </span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(<span class="sc">!</span>(numvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>, <span class="st">"GASP"</span>, <span class="st">"GRPIP"</span>, <span class="st">"JWAP"</span>, <span class="st">"JWDP"</span>,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"JWMNP"</span>, <span class="st">"PWGTP"</span>)))){</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'."</span>)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="sc">!</span>(catvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"FER"</span>, <span class="st">"HHL"</span>, <span class="st">"SCH"</span>, <span class="st">"SCHL"</span>, <span class="st">"SEX"</span>)))){</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default)."</span>)</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(numvar, catvar)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># geographic level dictionaries</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"AK"</span> <span class="ot">=</span> <span class="st">"02"</span>, <span class="st">"AL"</span> <span class="ot">=</span> <span class="st">"01"</span>, <span class="st">"AR"</span> <span class="ot">=</span> <span class="st">"05"</span>, <span class="st">"AZ"</span> <span class="ot">=</span> <span class="st">"04"</span>, <span class="st">"CA"</span> <span class="ot">=</span> <span class="st">"06"</span>, <span class="st">"CO"</span> <span class="ot">=</span> <span class="st">"08"</span>, <span class="st">"CT"</span> <span class="ot">=</span> <span class="st">"09"</span>, <span class="st">"DC"</span> <span class="ot">=</span> <span class="st">"11"</span>, <span class="st">"DE"</span> <span class="ot">=</span> <span class="st">"10"</span>, <span class="st">"FL"</span> <span class="ot">=</span> <span class="st">"12"</span>, <span class="st">"GA"</span> <span class="ot">=</span> <span class="st">"13"</span>, <span class="st">"HI"</span> <span class="ot">=</span> <span class="st">"15"</span>, <span class="st">"IA"</span> <span class="ot">=</span> <span class="st">"19"</span>, <span class="st">"ID"</span> <span class="ot">=</span> <span class="st">"16"</span>, <span class="st">"IL"</span> <span class="ot">=</span> <span class="st">"17"</span>, <span class="st">"IN"</span> <span class="ot">=</span> <span class="st">"18"</span>, <span class="st">"KS"</span> <span class="ot">=</span> <span class="st">"20"</span>, <span class="st">"KY"</span> <span class="ot">=</span> <span class="st">"21"</span>, <span class="st">"LA"</span> <span class="ot">=</span> <span class="st">"22"</span>, <span class="st">"MA"</span> <span class="ot">=</span> <span class="st">"25"</span>, <span class="st">"MD"</span> <span class="ot">=</span> <span class="st">"24"</span>, <span class="st">"ME"</span> <span class="ot">=</span> <span class="st">"23"</span>, <span class="st">"MI"</span> <span class="ot">=</span> <span class="st">"26"</span>, <span class="st">"MN"</span> <span class="ot">=</span> <span class="st">"27"</span>, <span class="st">"MO"</span> <span class="ot">=</span> <span class="st">"29"</span>, <span class="st">"MS"</span> <span class="ot">=</span> <span class="st">"28"</span>, <span class="st">"MT"</span> <span class="ot">=</span> <span class="st">"30"</span>, <span class="st">"NC"</span> <span class="ot">=</span> <span class="st">"37"</span>, <span class="st">"ND"</span> <span class="ot">=</span> <span class="st">"38"</span>, <span class="st">"NE"</span> <span class="ot">=</span> <span class="st">"31"</span>, <span class="st">"NH"</span> <span class="ot">=</span> <span class="st">"33"</span>, <span class="st">"NJ"</span> <span class="ot">=</span> <span class="st">"34"</span>, <span class="st">"NM"</span> <span class="ot">=</span> <span class="st">"35"</span>, <span class="st">"NV"</span> <span class="ot">=</span> <span class="st">"32"</span>, <span class="st">"NY"</span> <span class="ot">=</span> <span class="st">"36"</span>, <span class="st">"OH"</span> <span class="ot">=</span> <span class="st">"39"</span>, <span class="st">"OK"</span> <span class="ot">=</span> <span class="st">"40"</span>, <span class="st">"OR"</span> <span class="ot">=</span> <span class="st">"41"</span>, <span class="st">"PA"</span> <span class="ot">=</span> <span class="st">"42"</span>, <span class="st">"RI"</span> <span class="ot">=</span> <span class="st">"44"</span>, <span class="st">"SC"</span> <span class="ot">=</span> <span class="st">"45"</span>, <span class="st">"SD"</span> <span class="ot">=</span> <span class="st">"46"</span>, <span class="st">"TN"</span> <span class="ot">=</span> <span class="st">"47"</span>, <span class="st">"TX"</span> <span class="ot">=</span> <span class="st">"48"</span>, <span class="st">"UT"</span> <span class="ot">=</span> <span class="st">"49"</span>, <span class="st">"VA"</span> <span class="ot">=</span> <span class="st">"51"</span>, <span class="st">"VT"</span> <span class="ot">=</span> <span class="st">"50"</span>, <span class="st">"WA"</span> <span class="ot">=</span> <span class="st">"53"</span>, <span class="st">"WI"</span> <span class="ot">=</span> <span class="st">"55"</span>, <span class="st">"WV"</span> <span class="ot">=</span> <span class="st">"54"</span>, <span class="st">"WY"</span> <span class="ot">=</span> <span class="st">"56"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>regions <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"NORTHEAST"</span> <span class="ot">=</span> <span class="st">'1'</span>, <span class="st">"MIDWEST"</span> <span class="ot">=</span> <span class="st">'2'</span>, <span class="st">"SOUTH"</span> <span class="ot">=</span> <span class="st">'3'</span>, <span class="st">"WEST"</span> <span class="ot">=</span> <span class="st">'4'</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>divisions <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">"NEW ENGLAND"</span> <span class="ot">=</span> <span class="st">'1'</span>, <span class="st">"MIDDLE ATLANTIC"</span> <span class="ot">=</span> <span class="st">'2'</span>, <span class="st">"EAST NORTH CENTRAL"</span> <span class="ot">=</span> <span class="st">'3'</span>, <span class="st">"WEST NORTH CENTRAL"</span> <span class="ot">=</span> <span class="st">'4'</span>, <span class="st">"SOUTH ATLANTIC"</span> <span class="ot">=</span> <span class="st">'5'</span>, <span class="st">"EAST SOUTH CENTRAL"</span> <span class="ot">=</span> <span class="st">'6'</span>, <span class="st">"WEST SOUTH CENTRAL"</span> <span class="ot">=</span> <span class="st">'7'</span>, <span class="st">"MOUNTAIN"</span> <span class="ot">=</span> <span class="st">'8'</span>, <span class="st">"PACIFIC"</span> <span class="ot">=</span> <span class="st">'9'</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># year range validation</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (year <span class="sc">&lt;</span> <span class="dv">2010</span> <span class="sc">||</span> year <span class="sc">==</span> <span class="dv">2020</span> <span class="sc">||</span> year <span class="sc">&gt;</span> <span class="dv">2024</span>){</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a year between 2010 and 2024, inclusive; 2020 is also not available."</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://api.census.gov/data/"</span>, year, </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"/acs/acs1/pums?get="</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  } <span class="co"># initializes census query with appropriate year</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co"># numeric variables validation  </span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(numvar) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">||</span> </span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(<span class="sc">!</span>(numvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>, <span class="st">"GASP"</span>, <span class="st">"GRPIP"</span>, <span class="st">"JWAP"</span>, <span class="st">"JWDP"</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"JWMNP"</span>, <span class="st">"PWGTP"</span>)))){</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'."</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="st">"PWGTP"</span> <span class="sc">%notin%</span> numvar) {</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">"PWGTP,"</span>, <span class="fu">str_c</span>(numvar, <span class="at">collapse =</span> <span class="st">","</span>))</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="fu">str_c</span>(numvar, <span class="at">collapse =</span> <span class="st">","</span>))</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  } <span class="co"># appends numeric variables to end of census query</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co"># categorical variables validation</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="sc">!</span>(catvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"FER"</span>, <span class="st">"HHL"</span>, <span class="st">"SCH"</span>, <span class="st">"SCHL"</span>, <span class="st">"SEX"</span>)))){</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default)."</span>)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="fu">str_c</span>(catvar, <span class="at">collapse =</span> <span class="st">","</span>), <span class="st">","</span>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  } <span class="co"># appends categorical variable(s) to end of census query</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co"># geographical level validation  </span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"STATE"</span> <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(subset)){</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  census</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
