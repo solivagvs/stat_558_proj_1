@@ -59,6 +59,7 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
 # year range validation
   if (year < 2010 || year == 2020 || year > 2024){
     print("Please enter a year between 2010 and 2024, inclusive; 2020 is also not available.")
+    return()
   } else {
     census_string <- paste0("https://api.census.gov/data/", year, 
     "/acs/acs1/pums?get=")
@@ -69,6 +70,7 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
       any(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP",
                              "JWMNP", "PWGTP")))){
     print("Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'.")
+    return()
   } else if ("PWGTP" %notin% numvar) {
     census_string <- paste0(census_string, "PWGTP,", str_c(numvar, collapse = ","))
   } else {
@@ -78,15 +80,50 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
 # categorical variables validation
   if (any(!(catvar %in% c("FER", "HHL", "SCH", "SCHL", "SEX")))){
     print("Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default).")
+    return()
   } else {
-    census_string <- paste0(census_string, str_c(catvar, collapse = ","), ",")
+    census_string <- paste0(census_string, ",", str_c(catvar, collapse = ","))
   } # appends categorical variable(s) to end of census query
 
 # geographical level validation  
-  if (geolevel == "STATE" && !is.null(subset)){
+  if (geolevel %notin% c("STATE", "REGION", "DIVISION")){
+    print("Please enter a geographical level from 'STATE', 'REGION', or 'DIVISION' and (optionally) furnish a specific one, otherwise all will be returned.")
+    return()
+  } else {
+    census_string <- paste0(census_string, "&for=", tolower(geolevel))
+  } # appends geographic level to end of census query
+
+# subset level validation
+  if (is.null(subset)){
+    census_string <- paste0(census_string, ":*&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
+    census <- GET(census_string)
+    census
+  } else if (geolevel == "STATE" && subset %notin% names(states)){
+    print("Please enter a valid two-letter state postal abbreviation, e.g., 'TN'.")
+    return()
+  } else {
+    census_string <- paste0(census_string, ":", states[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
   }
-  
-  census
+
+  if (geolevel == "REGION" && !is.null(subset) &&
+      subset %notin% names(regions)){
+    print("Please enter a valid region from 'NORTHEAST', 'MIDWEST', 'SOUTH', or 'WEST'.")
+    return()
+  } else {
+    census_string <- paste0(census_string, ":", regions[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
+  }
+
+  if (geolevel == "DIVISION" && !is.null(subset) &&
+      subset %notin% names(divisions)){
+    print("Please enter a valid division from 'NEW ENGLAND', 'MIDDLE ATLANTIC', 'EAST NORTH CENTRAL', 'WEST NORTH CENTRAL', 'SOUTH ATLANTIC', 'EAST SOUTH CENTRAL', 'WEST SOUTH CENTRAL', 'MOUNTAIN', or 'PACIFIC'.")
+    return()
+  } else {
+    census_string <- paste0(census_string, ":", divisions[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
+  }
+
+return(census_string)
+#    census <- GET(census_string)
+#    return(census)
 }
 ```
 
