@@ -229,27 +229,27 @@ The following objects are masked from 'package:stats':
 <li>Then we use <em>helper</em> functions to “clean” up the data.</li>
 </ol>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>census_tibble <span class="ot">&lt;-</span> census_tn<span class="sc">$</span>content <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>census_tn_tibble <span class="ot">&lt;-</span> census_tn<span class="sc">$</span>content <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rawToChar</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fromJSON</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>(<span class="at">.name_repair =</span> <span class="st">"minimal"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_to_names</span>(<span class="at">row_number =</span> <span class="dv">1</span>) <span class="co"># "promotes" first row to column headers</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>census_tibble</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>census_tn_tibble</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 917 × 5
    SEX   PWGTP MAR   SCHL  state
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
- 1 2     117   1     24    47   
- 2 2     60    3     24    47   
- 3 2     95    1     24    47   
- 4 2     45    1     24    47   
- 5 1     112   1     24    47   
- 6 2     119   1     24    47   
- 7 1     158   1     24    47   
- 8 2     70    1     24    47   
- 9 1     58    1     24    47   
-10 1     54    1     24    47   
+ 1 1     11    1     24    47   
+ 2 1     17    1     24    47   
+ 3 1     14    1     24    47   
+ 4 1     14    1     24    47   
+ 5 1     15    1     24    47   
+ 6 1     35    5     24    47   
+ 7 2     42    2     24    47   
+ 8 1     84    1     24    47   
+ 9 2     81    1     24    47   
+10 2     104   1     24    47   
 # ℹ 907 more rows</code></pre>
 </div>
 </div>
@@ -283,7 +283,7 @@ The following objects are masked from 'package:stats':
 <span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(numvar) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">||</span> </span>
 <span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any</span>(<span class="sc">!</span>(numvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AGEP"</span>, <span class="st">"GASP"</span>, <span class="st">"GRPIP"</span>, <span class="st">"JWAP"</span>, <span class="st">"JWDP"</span>,</span>
 <span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"JWMNP"</span>, <span class="st">"PWGTP"</span>)))){</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'."</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', 'JWMNP', or 'PWGTP'."</span>)</span>
 <span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
 <span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="st">"PWGTP"</span> <span class="sc">%notin%</span> numvar) {</span>
 <span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">"PWGTP,"</span>, <span class="fu">str_c</span>(numvar, <span class="at">collapse =</span> <span class="st">","</span>))</span>
@@ -292,8 +292,8 @@ The following objects are masked from 'package:stats':
 <span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  } <span class="co"># appends numeric variables to end of census query</span></span>
 <span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co"># categorical variables validation</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="sc">!</span>(catvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"FER"</span>, <span class="st">"HHL"</span>, <span class="st">"SCH"</span>, <span class="st">"SCHL"</span>, <span class="st">"SEX"</span>)))){</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default)."</span>)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">any</span>(<span class="sc">!</span>(catvar <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"FER"</span>, <span class="st">"HHL"</span>, <span class="st">"SCH"</span>, <span class="st">"SEX"</span>)))){</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter at least one categorical values from 'FER', 'HHL', 'SCH', or 'SEX' (default)."</span>)</span>
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
 <span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">","</span>, <span class="fu">str_c</span>(catvar, <span class="at">collapse =</span> <span class="st">","</span>))</span>
@@ -301,7 +301,7 @@ The following objects are masked from 'package:stats':
 <span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="co"># geographical level validation  </span></span>
 <span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (geolevel <span class="sc">%notin%</span> <span class="fu">c</span>(<span class="st">"STATE"</span>, <span class="st">"REGION"</span>, <span class="st">"DIVISION"</span>)){</span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a geographical level from 'STATE', 'REGION', or 'DIVISION' and (optionally) furnish a specific one, otherwise all will be returned."</span>)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a geographical level from 'STATE' (default), 'REGION', or 'DIVISION' and (optionally) furnish a specific one, otherwise all will be returned."</span>)</span>
 <span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
 <span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
 <span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">"&amp;for="</span>, <span class="fu">tolower</span>(geolevel))</span>
@@ -312,33 +312,101 @@ The following objects are masked from 'package:stats':
 <span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":*&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
 <span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>    census <span class="ot">&lt;-</span> <span class="fu">GET</span>(census_string)</span>
 <span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>    census</span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"STATE"</span> <span class="sc">&amp;&amp;</span> subset <span class="sc">%notin%</span> <span class="fu">names</span>(states)){</span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a valid two-letter state postal abbreviation, e.g., 'TN'."</span>)</span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, states[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"REGION"</span> <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(subset) <span class="sc">&amp;&amp;</span></span>
-<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>      subset <span class="sc">%notin%</span> <span class="fu">names</span>(regions)){</span>
-<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a valid region from 'NORTHEAST', 'MIDWEST', 'SOUTH', or 'WEST'."</span>)</span>
-<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
-<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, regions[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
-<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"DIVISION"</span> <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.null</span>(subset) <span class="sc">&amp;&amp;</span></span>
-<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>      subset <span class="sc">%notin%</span> <span class="fu">names</span>(divisions)){</span>
-<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter a valid division from 'NEW ENGLAND', 'MIDDLE ATLANTIC', 'EAST NORTH CENTRAL', 'WEST NORTH CENTRAL', 'SOUTH ATLANTIC', 'EAST SOUTH CENTRAL', 'WEST SOUTH CENTRAL', 'MOUNTAIN', or 'PACIFIC'."</span>)</span>
-<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
-<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, divisions[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
-<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a><span class="fu">return</span>(census_string)</span>
-<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a><span class="co">#    census &lt;- GET(census_string)</span></span>
-<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a><span class="co">#    return(census)</span></span>
-<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"STATE"</span> <span class="sc">&amp;&amp;</span> subset <span class="sc">%in%</span> <span class="fu">names</span>(states)){</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, states[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"REGION"</span> <span class="sc">&amp;&amp;</span> subset <span class="sc">%in%</span> <span class="fu">names</span>(regions)){</span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, regions[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (geolevel <span class="sc">==</span> <span class="st">"DIVISION"</span> <span class="sc">&amp;&amp;</span> subset <span class="sc">%in%</span> <span class="fu">names</span>(divisions)){</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    census_string <span class="ot">&lt;-</span> <span class="fu">paste0</span>(census_string, <span class="st">":"</span>, divisions[subset], <span class="st">"&amp;SCHL=24&amp;key=5f3b8018114ef7902b34be730306e5ebf9102875"</span>)</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(<span class="st">"Please enter an appropriate two-letter state (default) abbreviation, region, or division and designate appropriately in the `geolevel` input."</span>)</span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>()</span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>  } <span class="co"># looks up and appends appropriate number to end of census query</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a><span class="co"># queries the server</span></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>  census <span class="ot">&lt;-</span> <span class="fu">GET</span>(census_string)</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a><span class="co"># converts the queried data into a tibble</span></span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>  census_tibble <span class="ot">&lt;-</span> census<span class="sc">$</span>content <span class="sc">|&gt;</span></span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rawToChar</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fromJSON</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>(<span class="at">.name_repair =</span> <span class="st">"universal_quiet"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>    <span class="fu">row_to_names</span>(<span class="at">row_number =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">clean_names</span>()</span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a><span class="co"># numeric data cleaning</span></span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="st">"AGEP"</span> <span class="sc">%in%</span> numvar){</span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>agep <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(census_tibble<span class="sc">$</span>agep)</span>
+<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"GASP"</span> <span class="sc">%in%</span> numvar){</span>
+<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>gasp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(census_tibble<span class="sc">$</span>gasp)</span>
+<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"GRPIP"</span> <span class="sc">%in%</span> numvar){</span>
+<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>grpip <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(census_tibble<span class="sc">$</span>grpip)</span>
+<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a><span class="co">#  if ("JWAP" %in% numvar){</span></span>
+<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a><span class="co">#    census_tibble$jwap &lt;- as</span></span>
+<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a><span class="co">#    }</span></span>
+<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a><span class="co">#  if ("JWDP" %in% numvar){</span></span>
+<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a><span class="co">#    census_tibble$jwdp &lt;- as</span></span>
+<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a><span class="co">#    }</span></span>
+<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="st">"JWMNP"</span> <span class="sc">%in%</span> numvar){</span>
+<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>jwmnp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(census_tibble<span class="sc">$</span>jwmnp)</span>
+<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a>  census_tibble<span class="sc">$</span>pwgtp <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(census_tibble<span class="sc">$</span>pwgtp)</span>
+<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-99"><a href="#cb10-99" aria-hidden="true" tabindex="-1"></a><span class="co"># categorical data cleaning</span></span>
+<span id="cb10-100"><a href="#cb10-100" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="st">"FER"</span> <span class="sc">%in%</span> catvar){</span>
+<span id="cb10-101"><a href="#cb10-101" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>fer <span class="ot">&lt;-</span> <span class="fu">factor</span>(census_tibble<span class="sc">$</span>fer,</span>
+<span id="cb10-102"><a href="#cb10-102" aria-hidden="true" tabindex="-1"></a>                                <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'0'</span>, <span class="st">'1'</span>, <span class="st">'2'</span>),</span>
+<span id="cb10-103"><a href="#cb10-103" aria-hidden="true" tabindex="-1"></a>                                <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"N/A"</span>, <span class="st">"Yes"</span>, <span class="st">"No"</span>))</span>
+<span id="cb10-104"><a href="#cb10-104" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-105"><a href="#cb10-105" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="st">"HHL"</span> <span class="sc">%in%</span> catvar){</span>
+<span id="cb10-106"><a href="#cb10-106" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>hhl <span class="ot">&lt;-</span> <span class="fu">factor</span>(census_tibble<span class="sc">$</span>hhl,</span>
+<span id="cb10-107"><a href="#cb10-107" aria-hidden="true" tabindex="-1"></a>                                <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'0'</span>, <span class="st">'1'</span>, <span class="st">'2'</span>, <span class="st">'3'</span>, <span class="st">'4'</span>, <span class="st">'5'</span>),</span>
+<span id="cb10-108"><a href="#cb10-108" aria-hidden="true" tabindex="-1"></a>                                <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"N/A"</span>, <span class="st">"English only"</span>, <span class="st">"Spanish"</span>,</span>
+<span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">"Other Indo-European"</span>, <span class="st">"Asian and</span></span>
+<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a><span class="st">                                           Pacific Island"</span>, <span class="st">"Other"</span>))</span>
+<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-112"><a href="#cb10-112" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="st">"SCH"</span> <span class="sc">%in%</span> catvar){</span>
+<span id="cb10-113"><a href="#cb10-113" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>sch <span class="ot">&lt;-</span> <span class="fu">factor</span>(census_tibble<span class="sc">$</span>sch,</span>
+<span id="cb10-114"><a href="#cb10-114" aria-hidden="true" tabindex="-1"></a>                                <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'0'</span>, <span class="st">'1'</span>, <span class="st">'2'</span>, <span class="st">'3'</span>),</span>
+<span id="cb10-115"><a href="#cb10-115" aria-hidden="true" tabindex="-1"></a>                                <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"N/A"</span>,</span>
+<span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">"No attendance in past 3 months"</span>,</span>
+<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">"Yes, public school or college"</span>,</span>
+<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a>                                           <span class="st">"Yes, private school, college, or</span></span>
+<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a><span class="st">                                           home school"</span>))</span>
+<span id="cb10-120"><a href="#cb10-120" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-121"><a href="#cb10-121" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="st">"SEX"</span> <span class="sc">%in%</span> catvar){</span>
+<span id="cb10-122"><a href="#cb10-122" aria-hidden="true" tabindex="-1"></a><span class="co">#    census_tibble$sex &lt;- as.factor(census_tibble$sex)</span></span>
+<span id="cb10-123"><a href="#cb10-123" aria-hidden="true" tabindex="-1"></a>    census_tibble<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(census_tibble<span class="sc">$</span>sex,</span>
+<span id="cb10-124"><a href="#cb10-124" aria-hidden="true" tabindex="-1"></a>                                <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'1'</span>, <span class="st">'2'</span>),</span>
+<span id="cb10-125"><a href="#cb10-125" aria-hidden="true" tabindex="-1"></a>                                <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>))</span>
+<span id="cb10-126"><a href="#cb10-126" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-127"><a href="#cb10-127" aria-hidden="true" tabindex="-1"></a>  census_tibble<span class="sc">$</span>schl <span class="ot">&lt;-</span> <span class="fu">factor</span>(census_tibble<span class="sc">$</span>schl,</span>
+<span id="cb10-128"><a href="#cb10-128" aria-hidden="true" tabindex="-1"></a>                               <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">'0'</span>, <span class="st">'1'</span>, <span class="st">'2'</span>, <span class="st">'3'</span>, <span class="st">'4'</span>,</span>
+<span id="cb10-129"><a href="#cb10-129" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">'5'</span>, <span class="st">'6'</span>, <span class="st">'7'</span>, <span class="st">'8'</span>, <span class="st">'9'</span>,</span>
+<span id="cb10-130"><a href="#cb10-130" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">'10'</span>, <span class="st">'11'</span>, <span class="st">'12'</span>, <span class="st">'13'</span>, <span class="st">'14'</span>,</span>
+<span id="cb10-131"><a href="#cb10-131" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">'15'</span>, <span class="st">'16'</span>, <span class="st">'17'</span>, <span class="st">'18'</span>, <span class="st">'19'</span>,</span>
+<span id="cb10-132"><a href="#cb10-132" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">'20'</span>, <span class="st">'21'</span>, <span class="st">'22'</span>, <span class="st">'23'</span>, <span class="st">'24'</span>),</span>
+<span id="cb10-133"><a href="#cb10-133" aria-hidden="true" tabindex="-1"></a>                               <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"N/A"</span>, <span class="st">"No schooling completed"</span>,</span>
+<span id="cb10-134"><a href="#cb10-134" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Nursery school, preschool"</span>,</span>
+<span id="cb10-135"><a href="#cb10-135" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Kindergarten"</span>, <span class="st">"Grade 1"</span>, <span class="st">"Grade 2"</span>,</span>
+<span id="cb10-136"><a href="#cb10-136" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Grade 3"</span>, <span class="st">"Grade 4"</span>, <span class="st">"Grade 5"</span>,</span>
+<span id="cb10-137"><a href="#cb10-137" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Grade 6"</span>, <span class="st">"Grade 7"</span>, <span class="st">"Grade 8"</span>,</span>
+<span id="cb10-138"><a href="#cb10-138" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Grade 9"</span>, <span class="st">"Grade 10"</span>, <span class="st">"Grade 11"</span>,</span>
+<span id="cb10-139"><a href="#cb10-139" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"12th grade - no diploma"</span>,</span>
+<span id="cb10-140"><a href="#cb10-140" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Regular high school diploma"</span>,</span>
+<span id="cb10-141"><a href="#cb10-141" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"GED or alternative credential"</span>,</span>
+<span id="cb10-142"><a href="#cb10-142" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Some college, less than 1 year"</span>,</span>
+<span id="cb10-143"><a href="#cb10-143" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"1 or more years college, no degree"</span>,</span>
+<span id="cb10-144"><a href="#cb10-144" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Associate's degree"</span>, <span class="st">"Bachelor's</span></span>
+<span id="cb10-145"><a href="#cb10-145" aria-hidden="true" tabindex="-1"></a><span class="st">                                          degree"</span>, <span class="st">"Master's degree"</span>,</span>
+<span id="cb10-146"><a href="#cb10-146" aria-hidden="true" tabindex="-1"></a>                                          <span class="st">"Professional degree beyond</span></span>
+<span id="cb10-147"><a href="#cb10-147" aria-hidden="true" tabindex="-1"></a><span class="st">                                          Bachelor's"</span>, <span class="st">"Doctorate degree"</span>))</span>
+<span id="cb10-148"><a href="#cb10-148" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-149"><a href="#cb10-149" aria-hidden="true" tabindex="-1"></a>  census_tibble</span>
+<span id="cb10-150"><a href="#cb10-150" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 

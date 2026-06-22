@@ -31,13 +31,13 @@ census_tn <- GET("https://api.census.gov/data/2024/acs/acs1/pums?get=SEX,PWGTP,M
 2. Then we use _helper_ functions to "clean" up the data.
 
 ```{r data_processing_bullet_2}
-census_tibble <- census_tn$content |>
+census_tn_tibble <- census_tn$content |>
   rawToChar() |>
   fromJSON() |>
   as_tibble(.name_repair = "minimal") |>
   row_to_names(row_number = 1) # "promotes" first row to column headers
 
-census_tibble
+census_tn_tibble
 ```
 
 3. Now we write a function 
@@ -69,7 +69,7 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
   if (length(numvar) < 2 || 
       any(!(numvar %in% c("AGEP", "GASP", "GRPIP", "JWAP", "JWDP",
                              "JWMNP", "PWGTP")))){
-    print("Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', or 'JWMNP'.")
+    print("Please enter at least *two* numerical values from 'AGEP', 'GASP', 'GRPIP', 'JWAP', 'JWDP', 'JWMNP', or 'PWGTP'.")
     return()
   } else if ("PWGTP" %notin% numvar) {
     census_string <- paste0(census_string, "PWGTP,", str_c(numvar, collapse = ","))
@@ -78,8 +78,8 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
   } # appends numeric variables to end of census query
   
 # categorical variables validation
-  if (any(!(catvar %in% c("FER", "HHL", "SCH", "SCHL", "SEX")))){
-    print("Please enter at least one categorical values from 'FER', 'HHL', 'SCH', 'SCHL', or 'SEX' (default).")
+  if (any(!(catvar %in% c("FER", "HHL", "SCH", "SEX")))){
+    print("Please enter at least one categorical values from 'FER', 'HHL', 'SCH', or 'SEX' (default).")
     return()
   } else {
     census_string <- paste0(census_string, ",", str_c(catvar, collapse = ","))
@@ -87,7 +87,7 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
 
 # geographical level validation  
   if (geolevel %notin% c("STATE", "REGION", "DIVISION")){
-    print("Please enter a geographical level from 'STATE', 'REGION', or 'DIVISION' and (optionally) furnish a specific one, otherwise all will be returned.")
+    print("Please enter a geographical level from 'STATE' (default), 'REGION', or 'DIVISION' and (optionally) furnish a specific one, otherwise all will be returned.")
     return()
   } else {
     census_string <- paste0(census_string, "&for=", tolower(geolevel))
@@ -98,32 +98,100 @@ divisions <- list("NEW ENGLAND" = '1', "MIDDLE ATLANTIC" = '2', "EAST NORTH CENT
     census_string <- paste0(census_string, ":*&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
     census <- GET(census_string)
     census
-  } else if (geolevel == "STATE" && subset %notin% names(states)){
-    print("Please enter a valid two-letter state postal abbreviation, e.g., 'TN'.")
-    return()
-  } else {
+  } else if (geolevel == "STATE" && subset %in% names(states)){
     census_string <- paste0(census_string, ":", states[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
-  }
-
-  if (geolevel == "REGION" && !is.null(subset) &&
-      subset %notin% names(regions)){
-    print("Please enter a valid region from 'NORTHEAST', 'MIDWEST', 'SOUTH', or 'WEST'.")
-    return()
-  } else {
+  } else if (geolevel == "REGION" && subset %in% names(regions)){
     census_string <- paste0(census_string, ":", regions[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
-  }
-
-  if (geolevel == "DIVISION" && !is.null(subset) &&
-      subset %notin% names(divisions)){
-    print("Please enter a valid division from 'NEW ENGLAND', 'MIDDLE ATLANTIC', 'EAST NORTH CENTRAL', 'WEST NORTH CENTRAL', 'SOUTH ATLANTIC', 'EAST SOUTH CENTRAL', 'WEST SOUTH CENTRAL', 'MOUNTAIN', or 'PACIFIC'.")
-    return()
-  } else {
+  } else if (geolevel == "DIVISION" && subset %in% names(divisions)){
     census_string <- paste0(census_string, ":", divisions[subset], "&SCHL=24&key=5f3b8018114ef7902b34be730306e5ebf9102875")
-  }
+  } else {
+    print("Please enter an appropriate two-letter state (default) abbreviation, region, or division and designate appropriately in the `geolevel` input.")
+    return()
+  } # looks up and appends appropriate number to end of census query
 
-return(census_string)
-#    census <- GET(census_string)
-#    return(census)
+# queries the server
+  census <- GET(census_string)
+
+# converts the queried data into a tibble
+  census_tibble <- census$content |>
+    rawToChar() |>
+    fromJSON() |>
+    as_tibble(.name_repair = "universal_quiet") |>
+    row_to_names(row_number = 1) |>
+    clean_names()
+
+# numeric data cleaning
+  if("AGEP" %in% numvar){
+    census_tibble$agep <- as.numeric(census_tibble$agep)
+    }
+  if ("GASP" %in% numvar){
+    census_tibble$gasp <- as.numeric(census_tibble$gasp)
+    }
+  if ("GRPIP" %in% numvar){
+    census_tibble$grpip <- as.numeric(census_tibble$grpip)
+    }
+#  if ("JWAP" %in% numvar){
+#    census_tibble$jwap <- as
+#    }
+#  if ("JWDP" %in% numvar){
+#    census_tibble$jwdp <- as
+#    }
+  if ("JWMNP" %in% numvar){
+    census_tibble$jwmnp <- as.numeric(census_tibble$jwmnp)
+    }
+  census_tibble$pwgtp <- as.numeric(census_tibble$pwgtp)
+  
+# categorical data cleaning
+  if("FER" %in% catvar){
+    census_tibble$fer <- factor(census_tibble$fer,
+                                levels = c('0', '1', '2'),
+                                labels = c("N/A", "Yes", "No"))
+  }
+  if("HHL" %in% catvar){
+    census_tibble$hhl <- factor(census_tibble$hhl,
+                                levels = c('0', '1', '2', '3', '4', '5'),
+                                labels = c("N/A", "English only", "Spanish",
+                                           "Other Indo-European", "Asian and
+                                           Pacific Island", "Other"))
+  }
+  if("SCH" %in% catvar){
+    census_tibble$sch <- factor(census_tibble$sch,
+                                levels = c('0', '1', '2', '3'),
+                                labels = c("N/A",
+                                           "No attendance in past 3 months",
+                                           "Yes, public school or college",
+                                           "Yes, private school, college, or
+                                           home school"))
+  }
+  if("SEX" %in% catvar){
+#    census_tibble$sex <- as.factor(census_tibble$sex)
+    census_tibble$sex <- factor(census_tibble$sex,
+                                levels = c('1', '2'),
+                                labels = c("Male", "Female"))
+  }
+  census_tibble$schl <- factor(census_tibble$schl,
+                               levels = c('0', '1', '2', '3', '4',
+                                          '5', '6', '7', '8', '9',
+                                          '10', '11', '12', '13', '14',
+                                          '15', '16', '17', '18', '19',
+                                          '20', '21', '22', '23', '24'),
+                               labels = c("N/A", "No schooling completed",
+                                          "Nursery school, preschool",
+                                          "Kindergarten", "Grade 1", "Grade 2",
+                                          "Grade 3", "Grade 4", "Grade 5",
+                                          "Grade 6", "Grade 7", "Grade 8",
+                                          "Grade 9", "Grade 10", "Grade 11",
+                                          "12th grade - no diploma",
+                                          "Regular high school diploma",
+                                          "GED or alternative credential",
+                                          "Some college, less than 1 year",
+                                          "1 or more years college, no degree",
+                                          "Associate's degree", "Bachelor's
+                                          degree", "Master's degree",
+                                          "Professional degree beyond
+                                          Bachelor's", "Doctorate degree"))
+  
+  census_tibble
 }
 ```
 
