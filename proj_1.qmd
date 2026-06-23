@@ -43,6 +43,8 @@ census_tn_tibble
 
 3. Now we write a function 
 
+This function has multiple requirements and I will save the narrative for afterwards.
+
 ```{r data_processing_bullet_3}
 census_query <- function(year = 2022,
                          numvar = c("AGEP", "PWGTP"),
@@ -207,6 +209,43 @@ deptime <- list('0' = NA, '1' = "12:15", '2' = "12:45", '3' = "1:15", '4' = "1:3
                                           Bachelor's", "Doctorate degree"))
   
   census_tibble
+}
+```
+
+- By far the lengthiest part of writing this function was utilizing the "dictionaries" provided by the Census Bureau and converting them to named lists. I am sure there were more elegant methods than what I employed, but it came down to using `Find + Replace` commands numerous times and then just manually editing fields (such as the average times per code) by hand.
+
+- Also time consuming were the checks for the data being entered correctly. I would add that all the examples provided by the Census Bureau include `&SCHL=24` within the query. Removing or altering this portion results in an error, so note that the data will _ALWAYS_ include `SCHL` (fixed at `24` [Doctoral Degree]), regardless of the user's query. If I had more time, I'd include another argument for different schooling levels.
+
+- The part I most enjoyed about this was actually converting the data to numeric and quantitative with the (cunning) use of `if` checks.
+
+4. Now we write a function that potentially queries the database multiple times for differing years. The function creates a `tibble` from the first queried year, adding a year column at the beginning. Then the function appends `tibbles` similarly crafted from other years to this initialized `tibble`.
+
+```{r data_processing_bullet_4}
+multiple_census_query <- function(years = 2022,
+                                  numvar = c("AGEP", "PWGTP"),
+                                  catvar = "SEX",
+                                  geolevel = "STATE",
+                                  subset = NULL){
+
+  census_main <- census_query(year = years[1],
+                              numvar = numvar,
+                              catvar = catvar,
+                              geolevel = geolevel,
+                              subset = subset)
+  census_main <- add_column(census, "year" = years[1], .before = 1)
+  
+  for (i in 2:length(years)){
+    census_working <- census_query(year = years[i],
+                                   numvar = numvar,
+                                   catvar = catvar,
+                                   geolevel = geolevel,
+                                   subset = subset)
+    census_working <- add_column(census, "year" = years[i], .before = 1)
+    
+    census_main <- bind_rows(census_main, census_working)
+  }
+  
+  census_main
 }
 ```
 
